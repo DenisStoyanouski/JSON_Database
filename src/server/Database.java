@@ -3,7 +3,7 @@ package server;
 import java.util.Arrays;
 
 class Database {
-    private String[] database = new String[100];
+    private String[] database = new String[1000];
 
     public Database() {
         Arrays.fill(database, "");

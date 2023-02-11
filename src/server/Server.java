@@ -1,62 +1,56 @@
 package server;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Scanner;
 
 public class Server {
-    private static final int PORT = 23456;
 
-    private static final String SERVER_ADDRESS = "localhost";
+    static String method;
+    static int index;
+    static String value;
 
-    public static void startServer() {
-        try (ServerSocket server = new ServerSocket(PORT, 50, InetAddress.getByName(SERVER_ADDRESS))) {
-            System.out.println("Server started!");
-            //while (true) {
-                Session session = new Session(server.accept());
-                session.start();
-                // it does not block this thread
-            //}
-        } catch (IOException e) {
-            e.printStackTrace();
+    static Scanner scanner = new Scanner(System.in);
+
+    public static void main(String[] args) {
+        ServerStarter.startServer();
+        //makeResponse();
+
+    }
+
+    /*private static void readInputFromConsole() {
+        StringBuilder sb = new StringBuilder();
+        String[] line = scanner.nextLine().split("\\s+");
+        for (int i = 0; i < line.length; i++) {
+            if (i == 0) {
+                method = line[i];
+            }
+            if (i == 1) {
+                index = Integer.parseInt(line[i]);
+            }
+            if (i > 1) {
+                sb.append(line[i]);
+                sb.append(" ");
+            }
         }
-    }
-}
-class Session extends Thread {
-    private final Socket socket;
+        value = sb.toString();
+    }*/
 
-    public Session(Socket socketForClient) {
-        this.socket = socketForClient;
-    }
-
-    public void run() {
-        try (
-                DataInputStream input = new DataInputStream(socket.getInputStream());
-                DataOutputStream output = new DataOutputStream(socket.getOutputStream())
-        ) {
-            String inputMsg = input.readUTF(); // reading the next client message
-            System.out.printf("Received: %s%n", inputMsg);
-            int number = getNumberOfRecord(inputMsg);
-            String outputMsg = String.format("A record # %d was sent!!", number);
-            output.writeUTF(outputMsg); // resend it to the client
-            System.out.printf("Sent: %s%n", outputMsg);
-            socket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+    /*private static void makeResponse() {
+        Database db = new Database();
+        while (true) {
+            readInputFromConsole();
+            switch (method) {
+                case "get" : db.getCell(index);
+                    break;
+                case "set" : db.setCell(index, value);
+                    break;
+                case "delete" : db.deleteCell(index);
+                    break;
+                case "exit" : System.exit(0);
+                    break;
+                default:
+                    System.out.println("Unknown command. Try again");
+                    break;
+            }
         }
-    }
-
-    private int getNumberOfRecord(String inputMsg) {
-        Pattern p = Pattern.compile("# \\d+\\b");
-        Matcher m = p.matcher(inputMsg);
-        if (m.find()) {
-            return Integer.parseInt(m.group().replaceAll("#\\s+",""));
-        }
-        return 0;
-    }
+    }*/
 }
