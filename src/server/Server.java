@@ -17,10 +17,11 @@ public class Server {
     public static void startServer() {
         try (ServerSocket server = new ServerSocket(PORT, 50, InetAddress.getByName(SERVER_ADDRESS))) {
             System.out.println("Server started!");
-            while (true) {
+            //while (true) {
                 Session session = new Session(server.accept());
-                session.start(); // it does not block this thread
-            }
+                session.start();
+                // it does not block this thread
+            //}
         } catch (IOException e) {
             e.printStackTrace();
         }
