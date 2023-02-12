@@ -28,7 +28,6 @@ public class Client {
     private static final int SERVER_PORT = 23456;
 
     public static void main(String[] args) {
-
         Client main = new Client();
         JCommander.newBuilder()
                 .addObject(main)

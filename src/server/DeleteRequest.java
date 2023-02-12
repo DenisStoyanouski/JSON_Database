@@ -13,7 +13,6 @@ public class DeleteRequest implements Request{
 
     @Override
     public String execute() {
-        db.deleteCell(index);
-        return null;
+        return db.deleteCell(index);
     }
 }

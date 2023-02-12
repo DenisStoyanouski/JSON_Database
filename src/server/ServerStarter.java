@@ -11,28 +11,40 @@ import java.net.Socket;
 
 public class ServerStarter {
     private static final int PORT = 23456;
-
     private static final String SERVER_ADDRESS = "localhost";
+    private static Session session;
+
+    private static boolean isServerOn = true;
 
     public static void startServer() {
+
         try (ServerSocket server = new ServerSocket(PORT, 50, InetAddress.getByName(SERVER_ADDRESS))) {
             System.out.println("Server started!");
-            while (true) {
-                Session session = new Session(server.accept());
+            Database database = new Database();
+            while (isServerOn) {
+                session = new Session(server.accept(), database);
                 session.start();
-                // it does not block this thread
+                session.join(300);
             }
-        } catch (IOException e) {
+        } catch (IOException|InterruptedException e) {
             e.printStackTrace();
         }
     }
+
+    public static void shotDownServer() {
+        isServerOn = false;
+
+    }
 }
+
 class Session extends Thread {
     private final Socket socket;
-    private final Database database = new Database();
 
-    public Session(Socket socketForClient) {
+    private final Database database;
+
+    public Session(Socket socketForClient, Database database) {
         this.socket = socketForClient;
+        this.database = database;
     }
 
     public void run() {
@@ -42,12 +54,18 @@ class Session extends Thread {
         ) {
             // reading and process the next client message
             String inputMsg = input.readUTF();
-            System.out.printf("Received: %s%n", inputMsg);
-            String[] request = parseRequest(inputMsg);
+            if (inputMsg.contains("exit")) {
+                ServerStarter.shotDownServer();
+            } else {
+                String[] request = parseRequest(inputMsg);
+                String outputMsg = getResponse(request);
+                output.writeUTF(outputMsg);
+            }
+            //System.out.printf("Received: %s%n", inputMsg);
+            //System.out.println(Arrays.toString(request));
             // send answer to client
-            String outputMsg = getResponse(request);
-            output.writeUTF(outputMsg); // resend it to the client
-            System.out.printf("Sent: %s%n", outputMsg);
+             // resend it to the client
+            //System.out.printf("Sent: %s%n", outputMsg);
             socket.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -78,7 +96,7 @@ class Session extends Thread {
 
         switch (method) {
             case "get" : requester.setRequest(new GetRequest(database, index));
-                        response = requester.executeRequest();
+                         response = requester.executeRequest();
                          break;
             case "set" : requester.setRequest(new SetRequest(database, index, value));
                         response = requester.executeRequest();
@@ -86,8 +104,6 @@ class Session extends Thread {
             case "delete" : requester.setRequest(new DeleteRequest(database, index));
                             response = requester.executeRequest();
                             break;
-            case "exit" : System.exit(0);
-
             default: break;
 
         }
