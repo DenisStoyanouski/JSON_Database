@@ -14,13 +14,14 @@ import java.util.List;
 
 public class Client {
     @Parameter(names="-t", description = "the type of the request")
-    String request;
+    String request = null;
 
     @Parameter(names="-i", description = "the index of the cell")
-    int index;
+    String index = null;
 
     @Parameter(names="-m",variableArity = true, description = "the value to save in the database")
     List<String> value = new ArrayList<>();
+
 
 
     private static final String SERVER_ADDRESS = "127.0.0.1";
@@ -33,7 +34,6 @@ public class Client {
                 .addObject(main)
                 .build()
                 .parse(args);
-        System.out.println(main.request + " " + main.index + " " + String.join(" ", main.value));
 
 
         System.out.println("Client started!");
@@ -42,11 +42,13 @@ public class Client {
                 DataInputStream input = new DataInputStream(socket.getInputStream());
                 DataOutputStream output  = new DataOutputStream(socket.getOutputStream())
         ) {
-            String msg = String.format("%s %s %s", main.request, main.index, String.join(" ", main.value));
+            String msg = String.format("%s %s %s", main.request, main.index == null ? "" : main.index, String.join(" ", main.value));
             System.out.printf("Sent: %s%n", msg);
-            output.writeUTF(msg);
-            String receivedMsg = input.readUTF();
-            System.out.printf("Received: %s%n",receivedMsg);
+            output.writeUTF(msg.trim());
+            if (!"exit".equals(main.request)) {
+                String receivedMsg = input.readUTF();
+                System.out.printf("Received: %s%n",receivedMsg);
+            }
             //}
         } catch (IOException e) {
             e.printStackTrace();

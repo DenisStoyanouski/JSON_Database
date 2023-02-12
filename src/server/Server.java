@@ -4,11 +4,11 @@ import java.util.Scanner;
 
 public class Server {
 
-    static String method;
+    /*static String method;
     static int index;
     static String value;
 
-    static Scanner scanner = new Scanner(System.in);
+    static Scanner scanner = new Scanner(System.in);*/
 
     public static void main(String[] args) {
         ServerStarter.startServer();

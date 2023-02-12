@@ -9,34 +9,32 @@ class Database {
         Arrays.fill(database, "");
     }
 
-    public void getCell(int index) {
-        String str = null;
+    public String getCell(int index) {
         try {
             if (!database[index - 1].isEmpty()) {
-                str = database[index - 1];
-                System.out.println(str);
+                return database[index - 1];
+
             } else throw new IndexOutOfBoundsException();
         } catch (IndexOutOfBoundsException e) {
-            System.out.println("ERROR");
+            return "ERROR";
         }
-
     }
 
-    public void setCell(int index, String value) {
+    public String setCell(int index, String value) {
         try {
             database[index - 1] = value;
-            System.out.println("OK");
+            return "OK";
         } catch (IndexOutOfBoundsException e) {
-            System.out.println("ERROR");
+            return "ERROR";
         }
     }
 
-    public void deleteCell(int index) {
+    public String deleteCell(int index) {
         try {
             database[index - 1] = "";
-            System.out.println("OK");
+            return "OK";
         } catch (IndexOutOfBoundsException e) {
-            System.out.println("ERROR");
+            return "ERROR";
         }
     }
 

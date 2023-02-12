@@ -15,7 +15,7 @@ public class SetRequest implements Request{
     }
 
     @Override
-    public void execute() {
-        db.setCell(index, value);
+    public String execute() {
+        return db.setCell(index, value);
     }
 }

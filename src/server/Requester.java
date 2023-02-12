@@ -7,8 +7,8 @@ public class Requester {
         this.request = request;
     }
 
-    public void executeRequest() {
-        request.execute();
+    public String executeRequest() {
+       return request.execute();
     }
 
 

@@ -11,7 +11,8 @@ public class GetRequest implements Request{
     }
 
     @Override
-    public void execute() {
+    public String execute() {
         db.getCell(index);
+        return null;
     }
 }
