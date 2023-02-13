@@ -1,5 +1,8 @@
 package server;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -41,6 +44,13 @@ class Session extends Thread {
 
     private final Database database;
 
+    private final Gson gson = new GsonBuilder()
+            .registerTypeAdapter(Message.class, new CustomerMessageGsonSerializer())
+            .disableHtmlEscaping()
+            .create();
+
+    private String jsonOutputMessage;
+
     public Session(Socket socketForClient, Database database) {
         this.socket = socketForClient;
         this.database = database;
@@ -51,18 +61,22 @@ class Session extends Thread {
                 DataInputStream input = new DataInputStream(socket.getInputStream());
                 DataOutputStream output = new DataOutputStream(socket.getOutputStream())
         ) {
-            // reading the next client message
+            // reading the next client message;
             String inputMsg = input.readUTF();
-            //deserialize String inputMsg to instance of Message class
+            //deserialize String inputMsg to instance of Message class;
             Message request = SimpleMessageGsonDeserializer.deserialize(inputMsg);
-            System.out.println(request.toString());
-
             if ("exit".equals(request.getType())) {
+                Message exitMsg = new Message();
+                exitMsg.setType("OK");
+                jsonOutputMessage = gson.toJson(exitMsg);
+                output.writeUTF(jsonOutputMessage);
+                System.out.println(jsonOutputMessage);
                 ServerStarter.shotDownServer();
             } else {
+                //make request to DB and get response on this request;
                 Message outputMsg = getResponse(request);
-                System.out.println(outputMsg);
-                //output.writeUTF(outputMsg);
+                //serialize Message to JsonObject
+                output.writeUTF(jsonOutputMessage);
             }
             socket.close();
         } catch (IOException e) {

@@ -38,8 +38,10 @@ class Database {
     public Message deleteCell(int index) {
         Message response = new Message();
         try {
-            database[index - 1] = "";
-            response.setType("OK");
+            if (!database[index - 1].isEmpty()) {
+                database[index - 1] = "";
+                response.setType("OK");
+            } else throw new IndexOutOfBoundsException();
         } catch (IndexOutOfBoundsException e) {
             response.setType("ERROR");
             response.setKey("No such key");

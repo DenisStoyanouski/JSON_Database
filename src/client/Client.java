@@ -43,10 +43,8 @@ public class Client {
             String requestJson = SimpleMessageGsonSerializer.serialize(new Message(main.request, main.index, main.value));
             System.out.printf("Sent: %s%n", requestJson);
             output.writeUTF(requestJson);
-            if (!"exit".equals(main.request)) {
-                String receivedMsg = input.readUTF();
-                System.out.printf("Received: %s%n",receivedMsg);
-            }
+            String receivedMsg = input.readUTF();
+            System.out.printf("Received: %s%n",receivedMsg);
         } catch (IOException e) {
             e.printStackTrace();
         }
