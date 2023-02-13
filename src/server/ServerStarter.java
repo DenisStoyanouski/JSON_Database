@@ -33,7 +33,6 @@ public class ServerStarter {
 
     public static void shotDownServer() {
         isServerOn = false;
-
     }
 }
 

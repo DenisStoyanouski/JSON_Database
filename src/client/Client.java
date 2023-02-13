@@ -2,25 +2,25 @@ package client;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
+import com.google.gson.Gson;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
+
 
 
 public class Client {
     @Parameter(names="-t", description = "the type of the request")
     String request = null;
 
-    @Parameter(names="-i", description = "the index of the cell")
+    @Parameter(names="-k", description = "the index of the cell")
     String index = null;
 
-    @Parameter(names="-m",variableArity = true, description = "the value to save in the database")
-    List<String> value = new ArrayList<>();
+    @Parameter(names="-v",variableArity = true, description = "the value to save in the database")
+    String value = null;
 
 
 
@@ -41,9 +41,9 @@ public class Client {
                 DataInputStream input = new DataInputStream(socket.getInputStream());
                 DataOutputStream output  = new DataOutputStream(socket.getOutputStream())
         ) {
-            String msg = String.format("%s %s %s", main.request, main.index == null ? "" : main.index, String.join(" ", main.value));
-            System.out.printf("Sent: %s%n", msg);
-            output.writeUTF(msg.trim());
+            String requestJson = new Gson().toJson(new Request(main.request, main.index, main.value));
+            System.out.println(requestJson);
+            output.writeUTF(requestJson);
             if (!"exit".equals(main.request)) {
                 String receivedMsg = input.readUTF();
                 System.out.printf("Received: %s%n",receivedMsg);
