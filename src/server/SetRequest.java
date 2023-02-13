@@ -4,18 +4,18 @@ public class SetRequest implements Request{
 
     private Database db;
 
-    private int index;
+    private String key;
 
     private String value;
 
-    public SetRequest(Database db, int index, String value) {
+    public SetRequest(Database db, String key, String value) {
         this.db = db;
-        this.index = index;
+        this.key = key;
         this.value = value;
     }
 
     @Override
     public Message execute() {
-        return db.setCell(index, value);
+        return db.setCell(key, value);
     }
 }

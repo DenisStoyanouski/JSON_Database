@@ -4,15 +4,15 @@ public class DeleteRequest implements Request{
 
     private Database db;
 
-    private int index;
+    private String key;
 
-    public DeleteRequest(Database db, int index) {
+    public DeleteRequest(Database db, String key) {
         this.db = db;
-        this.index = index;
+        this.key = key;
     }
 
     @Override
     public Message execute() {
-        return db.deleteCell(index);
+        return db.deleteCell(key);
     }
 }

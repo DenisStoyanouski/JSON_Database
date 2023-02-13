@@ -3,15 +3,15 @@ package server;
 public class GetRequest implements Request{
     private Database db;
 
-    private int index;
+    private String key;
 
-    public GetRequest(Database db, int index) {
+    public GetRequest(Database db, String key) {
         this.db = db;
-        this.index = index;
+        this.key = key;
     }
 
     @Override
     public Message execute() {
-        return db.getCell(index);
+        return db.getCell(key);
     }
 }

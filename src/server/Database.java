@@ -1,50 +1,43 @@
 package server;
 
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 class Database {
-    private String[] database = new String[1000];
+    private Map<String, String> database;
 
     public Database() {
-        Arrays.fill(database, "");
+        database = new HashMap<>();
     }
 
-    public Message getCell(int index) {
+    public Message getCell(String key) {
         Message response = new Message();
-        try {
-            if (!database[index - 1].isEmpty()) {
-                response.setType("OK");
-                response.setValue(database[index - 1]);
-            } else throw new IndexOutOfBoundsException();
-        } catch (IndexOutOfBoundsException e) {
-            response.setType("ERROR");
-            response.setKey("No such key");
-        }
-        return response;
-    }
-
-    public Message setCell(int index, String value) {
-        Message response = new Message();
-        try {
-            database[index - 1] = value;
+        if (database.get(key) != null) {
             response.setType("OK");
-        } catch (IndexOutOfBoundsException e) {
-            response.setType("ERROR");
-            response.setKey("No such key");
+            response.setValue(database.get(key));
+        } else {
+        response.setType("ERROR");
+        response.setKey("No such key");
         }
         return response;
     }
 
-    public Message deleteCell(int index) {
+    public Message setCell(String key, String value) {
         Message response = new Message();
-        try {
-            if (!database[index - 1].isEmpty()) {
-                database[index - 1] = "";
-                response.setType("OK");
-            } else throw new IndexOutOfBoundsException();
-        } catch (IndexOutOfBoundsException e) {
-            response.setType("ERROR");
-            response.setKey("No such key");
+        database.put(key, value);
+        response.setType("OK");
+
+        return response;
+    }
+
+    public Message deleteCell(String key) {
+        Message response = new Message();
+        if (database.get(key) != null) {
+            database.remove(key);
+            response.setType("OK");
+        } else {
+        response.setType("ERROR");
+        response.setKey("No such key");
         }
         return response;
     }

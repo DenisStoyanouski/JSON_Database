@@ -76,6 +76,7 @@ class Session extends Thread {
                 //make request to DB and get response on this request;
                 Message outputMsg = getResponse(request);
                 //serialize Message to JsonObject
+                jsonOutputMessage = gson.toJson(outputMsg);
                 output.writeUTF(jsonOutputMessage);
             }
             socket.close();
@@ -90,13 +91,13 @@ class Session extends Thread {
         Message response = null;
 
         switch (message.getType()) {
-            case "get" : requester.setRequest(new GetRequest(database, Integer.parseInt(message.getKey())));
+            case "get" : requester.setRequest(new GetRequest(database, message.getKey()));
                          response = requester.executeRequest();
                          break;
-            case "set" : requester.setRequest(new SetRequest(database, Integer.parseInt(message.getKey()), message.getValue()));
+            case "set" : requester.setRequest(new SetRequest(database, message.getKey(), message.getValue()));
                         response = requester.executeRequest();
                         break;
-            case "delete" : requester.setRequest(new DeleteRequest(database, Integer.parseInt(message.getKey())));
+            case "delete" : requester.setRequest(new DeleteRequest(database, message.getKey()));
                         response = requester.executeRequest();
                             break;
             default: break;
