@@ -41,7 +41,7 @@ public class Client {
                 DataInputStream input = new DataInputStream(socket.getInputStream());
                 DataOutputStream output  = new DataOutputStream(socket.getOutputStream())
         ) {
-            String requestJson = new Gson().toJson(new Request(main.request, main.index, main.value));
+            String requestJson = SimpleRequestGsonSerializer.serialize(new Request(main.request, main.index, main.value));
             System.out.println(requestJson);
             output.writeUTF(requestJson);
             if (!"exit".equals(main.request)) {
