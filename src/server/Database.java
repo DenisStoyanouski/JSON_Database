@@ -1,13 +1,27 @@
 package server;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
 class Database {
     private Map<String, String> database;
 
+    private final Path path = Paths.get("." + File.separator + "JSON Database" + File.separator + "task" +
+            File.separator + "src" + File.separator + "server" + File.separator + "data" + File.separator + "db.json");
+
+    private final File file = new File(path.toString());
+
     public Database() {
         database = new HashMap<>();
+
     }
 
     public Message getCell(String key) {
@@ -26,8 +40,9 @@ class Database {
         Message response = new Message();
         database.put(key, value);
         response.setType("OK");
-
+        serializeDB();
         return response;
+
     }
 
     public Message deleteCell(String key) {
@@ -39,7 +54,24 @@ class Database {
         response.setType("ERROR");
         response.setKey("No such key");
         }
+        serializeDB();
         return response;
+    }
+
+    private void serializeDB() {
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonResult = null;
+        try {
+            jsonResult = mapper.writerWithDefaultPrettyPrinter()
+                    .writeValueAsString(database);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        try (FileWriter fw = new FileWriter(file)) {
+            fw.write(jsonResult);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }
