@@ -60,8 +60,9 @@ class Session extends Thread {
             if ("exit".equals(request.getType())) {
                 ServerStarter.shotDownServer();
             } else {
-                String outputMsg = getResponse(request);
-                output.writeUTF(outputMsg);
+                Message outputMsg = getResponse(request);
+                System.out.println(outputMsg);
+                //output.writeUTF(outputMsg);
             }
             socket.close();
         } catch (IOException e) {
@@ -69,10 +70,10 @@ class Session extends Thread {
         }
     }
 
-    private String getResponse(Message message) throws IOException {
-
+    private Message getResponse(Message message) throws IOException {
+        //create request to DB and receive response
         Requester requester = new Requester();
-        String response = null;
+        Message response = null;
 
         switch (message.getType()) {
             case "get" : requester.setRequest(new GetRequest(database, Integer.parseInt(message.getKey())));
@@ -82,11 +83,12 @@ class Session extends Thread {
                         response = requester.executeRequest();
                         break;
             case "delete" : requester.setRequest(new DeleteRequest(database, Integer.parseInt(message.getKey())));
-                            response = requester.executeRequest();
+                        response = requester.executeRequest();
                             break;
             default: break;
 
         }
         return response;
+
     }
 }

@@ -7,7 +7,7 @@ public class Requester {
         this.request = request;
     }
 
-    public String executeRequest() {
+    public Message executeRequest() {
        return request.execute();
     }
 

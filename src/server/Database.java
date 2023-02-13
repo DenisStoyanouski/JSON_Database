@@ -9,33 +9,42 @@ class Database {
         Arrays.fill(database, "");
     }
 
-    public String getCell(int index) {
+    public Message getCell(int index) {
+        Message response = new Message();
         try {
             if (!database[index - 1].isEmpty()) {
-                return database[index - 1];
-
+                response.setType("OK");
+                response.setValue(database[index - 1]);
             } else throw new IndexOutOfBoundsException();
         } catch (IndexOutOfBoundsException e) {
-            return "ERROR";
+            response.setType("ERROR");
+            response.setKey("No such key");
         }
+        return response;
     }
 
-    public String setCell(int index, String value) {
+    public Message setCell(int index, String value) {
+        Message response = new Message();
         try {
             database[index - 1] = value;
-            return "OK";
+            response.setType("OK");
         } catch (IndexOutOfBoundsException e) {
-            return "ERROR";
+            response.setType("ERROR");
+            response.setKey("No such key");
         }
+        return response;
     }
 
-    public String deleteCell(int index) {
+    public Message deleteCell(int index) {
+        Message response = new Message();
         try {
             database[index - 1] = "";
-            return "OK";
+            response.setType("OK");
         } catch (IndexOutOfBoundsException e) {
-            return "ERROR";
+            response.setType("ERROR");
+            response.setKey("No such key");
         }
+        return response;
     }
 
 }
