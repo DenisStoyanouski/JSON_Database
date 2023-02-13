@@ -2,14 +2,14 @@ package client;
 
 import com.google.gson.*;
 
-public class SimpleRequestGsonSerializer{
-    public static String serialize(Request request) {
+public class SimpleMessageGsonSerializer{
+    public static String serialize(Message message) {
         GsonBuilder gsonBuilder = new GsonBuilder();
         Gson gson = gsonBuilder
                 //.setPrettyPrinting()
-                .serializeNulls()
+                //.serializeNulls()
                 .excludeFieldsWithoutExposeAnnotation()
                 .create();
-        return gson.toJson(request);
+        return gson.toJson(message);
     }
 }

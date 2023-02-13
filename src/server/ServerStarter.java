@@ -51,56 +51,37 @@ class Session extends Thread {
                 DataInputStream input = new DataInputStream(socket.getInputStream());
                 DataOutputStream output = new DataOutputStream(socket.getOutputStream())
         ) {
-            // reading and process the next client message
+            // reading the next client message
             String inputMsg = input.readUTF();
-            if (inputMsg.contains("exit")) {
+            //deserialize String inputMsg to instance of Message class
+            Message request = SimpleMessageGsonDeserializer.deserialize(inputMsg);
+            System.out.println(request.toString());
+
+            if ("exit".equals(request.getType())) {
                 ServerStarter.shotDownServer();
             } else {
-                String[] request = parseRequest(inputMsg);
                 String outputMsg = getResponse(request);
                 output.writeUTF(outputMsg);
             }
-            //System.out.printf("Received: %s%n", inputMsg);
-            //System.out.println(Arrays.toString(request));
-            // send answer to client
-             // resend it to the client
-            //System.out.printf("Sent: %s%n", outputMsg);
             socket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private String[] parseRequest(String inputMsg) {
-        return inputMsg.split("\\s+", 3);
-    }
+    private String getResponse(Message message) throws IOException {
 
-    private String getResponse(String[] request) throws IOException {
-        String response = null;
-        String method = null;
-        int index = 0;
-        String value = null;
-        for (int i = 0; i < request.length; i++) {
-            if (i == 0) {
-                method = request[0];
-            }
-            if (i == 1) {
-                index = Integer.parseInt(request[1]);
-            }
-            if (i == 2) {
-                value = request[2];
-            }
-        }
         Requester requester = new Requester();
+        String response = null;
 
-        switch (method) {
-            case "get" : requester.setRequest(new GetRequest(database, index));
+        switch (message.getType()) {
+            case "get" : requester.setRequest(new GetRequest(database, Integer.parseInt(message.getKey())));
                          response = requester.executeRequest();
                          break;
-            case "set" : requester.setRequest(new SetRequest(database, index, value));
+            case "set" : requester.setRequest(new SetRequest(database, Integer.parseInt(message.getKey()), message.getValue()));
                         response = requester.executeRequest();
                         break;
-            case "delete" : requester.setRequest(new DeleteRequest(database, index));
+            case "delete" : requester.setRequest(new DeleteRequest(database, Integer.parseInt(message.getKey())));
                             response = requester.executeRequest();
                             break;
             default: break;

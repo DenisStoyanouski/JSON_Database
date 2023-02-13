@@ -2,7 +2,6 @@ package client;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
-import com.google.gson.Gson;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -41,14 +40,13 @@ public class Client {
                 DataInputStream input = new DataInputStream(socket.getInputStream());
                 DataOutputStream output  = new DataOutputStream(socket.getOutputStream())
         ) {
-            String requestJson = SimpleRequestGsonSerializer.serialize(new Request(main.request, main.index, main.value));
-            System.out.println(requestJson);
+            String requestJson = SimpleMessageGsonSerializer.serialize(new Message(main.request, main.index, main.value));
+            System.out.printf("Sent: %s%n", requestJson);
             output.writeUTF(requestJson);
             if (!"exit".equals(main.request)) {
                 String receivedMsg = input.readUTF();
                 System.out.printf("Received: %s%n",receivedMsg);
             }
-            //}
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-class Request {
+class Message {
     @Expose
     private String type;
     @Expose
