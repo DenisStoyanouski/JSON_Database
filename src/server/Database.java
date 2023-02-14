@@ -10,12 +10,25 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 class Database {
-    private volatile Map<String, String> database;
+    final private Map<String, String> database;
 
-    private final Path path = Paths.get("." + File.separator + "JSON Database" + File.separator + "task" +
-            File.separator + "src" + File.separator + "server" + File.separator + "data" + File.separator + "db.json");
+    final private static ReadWriteLock lock = new ReentrantReadWriteLock();
+
+    final private static Lock writeLock = lock.writeLock();
+
+    final private static Lock readLock = lock.readLock();
+
+
+    /*private final Path path = Paths.get("." + File.separator + "JSON Database" + File.separator + "task" +
+            File.separator + "src" + File.separator + "server" + File.separator + "data" + File.separator + "db.json");*/
+
+    private final Path path = Paths.get("." + File.separator + "src" + File.separator + "server" + File.separator +
+            "data" + File.separator + "db.json");
 
     private final File file = new File(path.toString());
 
@@ -26,41 +39,58 @@ class Database {
 
     public Message getCell(String key) {
         Message response = new Message();
-        if (database.get(key) != null) {
-            response.setType("OK");
-            response.setValue(database.get(key));
-        } else {
-        response.setType("ERROR");
-        response.setKey("No such key");
+        try {
+            readLock.lock();
+            if (database.get(key) != null) {
+                response.setType("OK");
+                response.setValue(database.get(key));
+            } else {
+                response.setType("ERROR");
+                response.setKey("No such key");
+            }
+        } finally {
+            readLock.unlock();
         }
         return response;
     }
 
-    public synchronized Message setCell(String key, String value) {
+    public Message setCell(String key, String value) {
         Message response = new Message();
-        database.put(key, value);
-        response.setType("OK");
-        serializeDB();
-        return response;
-
-    }
-
-    public synchronized Message deleteCell(String key) {
-        Message response = new Message();
-        if (database.get(key) != null) {
-            database.remove(key);
+        try {
+            writeLock.lock();
+            database.put(key, value);
             response.setType("OK");
-        } else {
-        response.setType("ERROR");
-        response.setKey("No such key");
+            serializeDB();
+        } finally {
+            writeLock.unlock();
         }
-        serializeDB();
+        return response;
+
+    }
+
+    public Message deleteCell(String key) {
+        Message response = new Message();
+        try {
+            writeLock.lock();
+            if (database.get(key) != null) {
+                database.remove(key);
+                response.setType("OK");
+            } else {
+                response.setType("ERROR");
+                response.setKey("No such key");
+            }
+            serializeDB();
+        } finally {
+            writeLock.unlock();
+        }
+
         return response;
     }
 
-    private synchronized void serializeDB() {
+    private void serializeDB() {
+        //use jackson
         ObjectMapper mapper = new ObjectMapper();
-        String jsonResult = null;
+        String jsonResult;
         try {
             jsonResult = mapper.writerWithDefaultPrettyPrinter()
                     .writeValueAsString(database);

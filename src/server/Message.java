@@ -1,13 +1,12 @@
 package server;
 
 import com.google.gson.annotations.Expose;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+
 class Message {
     @Expose
     private String type;

@@ -15,7 +15,6 @@ import java.net.Socket;
 public class ServerStarter {
     private static final int PORT = 23456;
     private static final String SERVER_ADDRESS = "localhost";
-    private static Session session;
 
     private static boolean isServerOn = true;
 
@@ -25,7 +24,7 @@ public class ServerStarter {
             System.out.println("Server started!");
             Database database = new Database();
             while (isServerOn) {
-                session = new Session(server.accept(), database);
+                Session session = new Session(server.accept(), database);
                 session.start();
                 session.join(300);
             }
@@ -41,7 +40,6 @@ public class ServerStarter {
 
 class Session extends Thread {
     private final Socket socket;
-
     private final Database database;
 
     private final Gson gson = new GsonBuilder()

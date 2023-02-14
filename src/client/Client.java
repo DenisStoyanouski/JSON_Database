@@ -24,8 +24,10 @@ public class Client {
     @Parameter(names="-in",variableArity = true, description = "the value to save in the database")
     String fileName = null;
 
-    private static final Path path = Paths.get("." + File.separator + "JSON Database" + File.separator + "task" +
-            File.separator + "src" + File.separator + "client" + File.separator + "data");
+    /*private static final Path path = Paths.get("." + File.separator + "JSON Database" + File.separator + "task" +
+            File.separator + "src" + File.separator + "client" + File.separator + "data");*/
+
+    private static final Path path = Paths.get("." + File.separator + "src" + File.separator + "client" + File.separator + "data");
     private static final String SERVER_ADDRESS = "127.0.0.1";
     private static final int SERVER_PORT = 23456;
 
