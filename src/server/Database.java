@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 class Database {
-    private Map<String, String> database;
+    private volatile Map<String, String> database;
 
     private final Path path = Paths.get("." + File.separator + "JSON Database" + File.separator + "task" +
             File.separator + "src" + File.separator + "server" + File.separator + "data" + File.separator + "db.json");
@@ -36,7 +36,7 @@ class Database {
         return response;
     }
 
-    public Message setCell(String key, String value) {
+    public synchronized Message setCell(String key, String value) {
         Message response = new Message();
         database.put(key, value);
         response.setType("OK");
@@ -45,7 +45,7 @@ class Database {
 
     }
 
-    public Message deleteCell(String key) {
+    public synchronized Message deleteCell(String key) {
         Message response = new Message();
         if (database.get(key) != null) {
             database.remove(key);
@@ -58,7 +58,7 @@ class Database {
         return response;
     }
 
-    private void serializeDB() {
+    private synchronized void serializeDB() {
         ObjectMapper mapper = new ObjectMapper();
         String jsonResult = null;
         try {

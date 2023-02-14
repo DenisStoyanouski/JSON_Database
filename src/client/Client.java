@@ -13,10 +13,10 @@ import java.util.Scanner;
 
 public class Client {
     @Parameter(names="-t", description = "the type of the request")
-    String request = null;
+    String type = null;
 
     @Parameter(names="-k", description = "the index of the cell")
-    String index = null;
+    String key = null;
 
     @Parameter(names="-v",variableArity = true, description = "the value to save in the database")
     String value = null;
@@ -30,13 +30,12 @@ public class Client {
     private static final int SERVER_PORT = 23456;
 
     public static void main(String[] args) {
-        Client main = new Client();
+        Client arguments  = new Client();
         JCommander.newBuilder()
-                .addObject(main)
+                .addObject(arguments)
                 .build()
                 .parse(args);
 
-        System.out.println(main.fileName);
         System.out.println("Client started!");
         try (
                 Socket socket = new Socket(InetAddress.getByName(SERVER_ADDRESS), SERVER_PORT);
@@ -44,12 +43,12 @@ public class Client {
                 DataOutputStream output  = new DataOutputStream(socket.getOutputStream())
         ) {
             String requestJson;
-            if (main.fileName != null) {
-                requestJson = deserializeRequestFromFile(main.fileName);
+            if (arguments.fileName != null) {
+                requestJson = deserializeRequestFromFile(arguments.fileName);
             } else {
-                requestJson = SimpleMessageGsonSerializer.serialize(new Message(main.request, main.index, main.value));
+                Message message = new Message(arguments.type, arguments.key, arguments.value);
+                requestJson = SimpleMessageGsonSerializer.serialize(message);
             }
-
             System.out.printf("Sent: %s%n", requestJson);
             output.writeUTF(requestJson);
             String receivedMsg = input.readUTF();
